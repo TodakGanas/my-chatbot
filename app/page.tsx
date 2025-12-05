@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Sender, Message } from './types';
-import { sendMessageToAi } from './api/mockAiService';
+import { sendMessageToAi, getMessage } from './api/mockAiService';
 import { Sidebar } from './components/Sidebar';
 import { ChatBubble } from './components/ChatBubble';
 import { ChatInput } from './components/ChatInput';
@@ -33,7 +33,7 @@ const App = () => {
     setIsLoading(true);
 
     try {
-      const responseText = await sendMessageToAi(text);
+      const responseText = await getMessage(text);
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
