@@ -8,6 +8,7 @@ export interface Message {
     text: string;
     sender: Sender;
     timestamp: number;
+    tokenCount?: number;
 }
 
 export interface ChatSession {

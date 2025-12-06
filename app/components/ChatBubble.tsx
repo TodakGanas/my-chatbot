@@ -28,6 +28,14 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
                         <p className="whitespace-pre-wrap">{message.text}</p>
                     </div>
                 </div>
+
+                {isAi && message.tokenCount !== undefined && (
+                    <div className="flex-shrink-0 flex flex-col justify-end">
+                        <span className="text-xs text-gray-400 whitespace-nowrap">
+                            {message.tokenCount} tokens
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -73,11 +73,20 @@ const App = () => {
         body: JSON.stringify({ text }),
       }).then(res => res.json()).then(data => data.message);
 
+      const token = await fetch('/api/getToken', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      }).then(res => res.json()).then(data => data.message);
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: responseText,
         sender: Sender.AI,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        tokenCount: token
       };
 
       setMessages(prev => [...prev, aiMessage]);
