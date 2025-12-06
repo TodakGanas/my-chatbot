@@ -2,12 +2,38 @@
 import React from 'react';
 import { PlusIcon, SparklesIcon } from './Icon';
 
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
+
 interface SidebarProps {
     isOpen: boolean;
     onNewChat: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNewChat }) => {
+    const router = useRouter();
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+    };
+
+    const [name, setName] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user?.user_metadata?.full_name) {
+                setName(user.user_metadata.full_name);
+            } else if (user?.email) {
+                setName(user.email.split('@')[0]);
+            } else {
+                setName("User");
+            }
+        };
+        getUser();
+    }, []);
+
     return (
         <div
             className={`
@@ -46,15 +72,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNewChat }) => {
             </div>
 
             <div className="p-4 border-t border-orange-100">
-                <a href="/login" className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
-                        <span className="text-xs font-bold text-orange-600">U</span>
+                <p className="text-center font-medium text-gray-700 mb-2">{name}</p>
+                <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors group"
+                >
+                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center group-hover:bg-red-100 group-hover:text-red-600 transition-colors">
+                        <span className="text-xs font-bold text-orange-600 group-hover:text-red-600">EO</span>
                     </div>
                     <div className="flex flex-col items-start">
-                        <span className="font-medium">Sign In</span>
-                        <span className="text-xs text-gray-500">To save history</span>
+                        <span className="font-medium">Sign Out</span>
+                        <span className="text-xs text-gray-400 group-hover:text-red-400">End session</span>
                     </div>
-                </a>
+                </button>
             </div>
         </div>
     );

@@ -6,12 +6,44 @@ import { Sidebar } from './components/Sidebar';
 import { ChatBubble } from './components/ChatBubble';
 import { ChatInput } from './components/ChatInput';
 import { MenuIcon, SparklesIcon } from './components/Icon';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const scrollEndRef = useRef<HTMLDivElement>(null);
+
+  // Auth state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+      } else {
+        setIsAuthenticated(true);
+      }
+      setIsAuthChecking(false);
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.push('/login');
+        setIsAuthenticated(false);
+      } else {
+        setIsAuthenticated(true);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [router]);
 
   const scrollToBottom = () => {
     scrollEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -54,6 +86,23 @@ const App = () => {
     setMessages([]);
     setIsSidebarOpen(false); // Close sidebar on mobile when starting new chat
   };
+
+  if (isAuthChecking) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center animate-pulse">
+            <SparklesIcon className="w-6 h-6 text-orange-500" />
+          </div>
+          <p className="text-gray-500 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-white">
