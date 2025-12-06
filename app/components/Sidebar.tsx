@@ -46,15 +46,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNewChat }) => {
             </div>
 
             <div className="p-4 border-t border-orange-100">
-                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg transition-colors">
+                <a href="/login" className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg transition-colors">
                     <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
                         <span className="text-xs font-bold text-orange-600">U</span>
                     </div>
                     <div className="flex flex-col items-start">
-                        <span className="font-medium">User</span>
-                        <span className="text-xs text-gray-500">Free Plan</span>
+                        <span className="font-medium">Sign In</span>
+                        <span className="text-xs text-gray-500">To save history</span>
                     </div>
-                </button>
+                </a>
             </div>
         </div>
     );

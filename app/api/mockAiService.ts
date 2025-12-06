@@ -11,7 +11,7 @@ export const getMessage = async (text: string): Promise<string> => {
         contents: text,
     });
 
-    return response.text;
+    return response.text ?? "";
 }
 
 export const sendMessageToAi = async (text: string): Promise<string> => {
