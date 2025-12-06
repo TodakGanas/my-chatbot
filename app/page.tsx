@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
 import { Sender, Message } from './types';
-import { sendMessageToAi, getMessage } from './api/mockAiService';
+import { sendMessageToAi, getMessage } from './api/aiService';
 import { Sidebar } from './components/Sidebar';
 import { ChatBubble } from './components/ChatBubble';
 import { ChatInput } from './components/ChatInput';
@@ -65,7 +65,13 @@ const App = () => {
     setIsLoading(true);
 
     try {
-      const responseText = await getMessage(text);
+      const responseText = await fetch('/api/getMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      }).then(res => res.json()).then(data => data.message);
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),

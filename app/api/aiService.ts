@@ -1,4 +1,4 @@
-import { Sender, Message } from '../types';
+'use server';
 import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({
