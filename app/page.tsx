@@ -1,7 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
-import { Sender, Message } from './types';
+import { Sender, Message, ChatSession } from './types';
 import { sendMessageToAi, getMessage } from './api/aiService';
+import { createNewChat, getUserChats, getChatMessages, saveMessage } from '@/lib/chatService';
 import { Sidebar } from './components/Sidebar';
 import { ChatBubble } from './components/ChatBubble';
 import { ChatInput } from './components/ChatInput';
@@ -13,6 +14,9 @@ const App = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
   const scrollEndRef = useRef<HTMLDivElement>(null);
 
   // Auth state
@@ -27,6 +31,8 @@ const App = () => {
         router.push('/login');
       } else {
         setIsAuthenticated(true);
+        setUser(session.user);
+        loadChats();
       }
       setIsAuthChecking(false);
     };
@@ -37,13 +43,22 @@ const App = () => {
       if (!session) {
         router.push('/login');
         setIsAuthenticated(false);
+        setUser(null);
+        setSessions([]);
       } else {
         setIsAuthenticated(true);
+        setUser(session.user);
+        loadChats();
       }
     });
 
     return () => subscription.unsubscribe();
   }, [router]);
+
+  const loadChats = async () => {
+    const chats = await getUserChats();
+    setSessions(chats);
+  };
 
   const scrollToBottom = () => {
     scrollEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -64,7 +79,25 @@ const App = () => {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
+    let chatId = currentSessionId;
+
     try {
+      // 1. If no current chat, create one
+      if (!chatId && user) {
+        const newChat = await createNewChat(user.id, text);
+        if (newChat) {
+          chatId = newChat.id;
+          setCurrentSessionId(chatId);
+          setSessions(prev => [newChat, ...prev]);
+        }
+      }
+
+      // 2. Save user message if we have a chat ID
+      if (chatId) {
+        await saveMessage(chatId, userMessage);
+      }
+
+      // 3. Get AI Response
       const responseText = await fetch('/api/getMessage', {
         method: 'POST',
         headers: {
@@ -80,6 +113,7 @@ const App = () => {
         },
         body: JSON.stringify({ text }),
       }).then(res => res.json()).then(data => data.message);
+      console.log("token :", token);
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -90,8 +124,14 @@ const App = () => {
       };
 
       setMessages(prev => [...prev, aiMessage]);
+
+      // 4. Save AI message
+      if (chatId) {
+        await saveMessage(chatId, aiMessage);
+      }
+
     } catch (error) {
-      console.error("Failed to get response", error);
+      console.error("Failed to get response or save message", error);
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +139,22 @@ const App = () => {
 
   const handleNewChat = () => {
     setMessages([]);
-    setIsSidebarOpen(false); // Close sidebar on mobile when starting new chat
+    setCurrentSessionId(null);
+    setIsSidebarOpen(false);
+  };
+
+  const handleSelectSession = async (id: string) => {
+    setCurrentSessionId(id);
+    setIsSidebarOpen(false);
+    setIsLoading(true);
+    try {
+      const msgs = await getChatMessages(id);
+      setMessages(msgs);
+    } catch (error) {
+      console.error("Failed to load chat messages", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isAuthChecking) {
@@ -133,6 +188,9 @@ const App = () => {
       <Sidebar
         isOpen={isSidebarOpen}
         onNewChat={handleNewChat}
+        sessions={sessions}
+        onSelectSession={handleSelectSession}
+        currentSessionId={currentSessionId}
       />
 
       {/* Main Content */}

@@ -5,12 +5,17 @@ import { PlusIcon, SparklesIcon } from './Icon';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
+import { ChatSession } from '../types';
+
 interface SidebarProps {
     isOpen: boolean;
     onNewChat: () => void;
+    sessions: ChatSession[];
+    onSelectSession: (id: string) => void;
+    currentSessionId: string | null;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNewChat }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNewChat, sessions, onSelectSession, currentSessionId }) => {
     const router = useRouter();
 
     const handleSignOut = async () => {
@@ -60,12 +65,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNewChat }) => {
 
                 {/* Mock history items */}
                 <div className="space-y-1">
-                    {['Project Idea Brainstorm', 'React vs Vue', 'Orange Color Palette', 'Weekend Plans'].map((item, i) => (
+                    {sessions.map((session) => (
                         <button
-                            key={i}
-                            className="w-full text-left px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-orange-50 transition-colors truncate"
+                            key={session.id}
+                            onClick={() => onSelectSession(session.id)}
+                            className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors truncate
+                                ${currentSessionId === session.id
+                                    ? 'bg-orange-100 text-orange-800 font-medium'
+                                    : 'text-gray-600 hover:bg-orange-50'
+                                }
+                            `}
                         >
-                            {item}
+                            {session.title || "New Chat"}
                         </button>
                     ))}
                 </div>
