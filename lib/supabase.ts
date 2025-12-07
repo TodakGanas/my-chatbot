@@ -1,4 +1,4 @@
-
+// Initialisation de la base de données Supabase ou le service du backend
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = "https://dmqqqebuqqvjbfegxhhl.supabase.co";

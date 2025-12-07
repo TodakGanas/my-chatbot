@@ -1,6 +1,8 @@
+// Service de chat pour gérer les opérations de chat
 import { supabase } from '@/lib/supabase';
 import { Message, Sender, ChatSession } from '@/app/types';
 
+// Création d'un nouveau chat
 export const createNewChat = async (userId: string, firstMessagePreview: string): Promise<ChatSession | null> => {
     const { data, error } = await supabase
         .from('chats')
@@ -23,6 +25,7 @@ export const createNewChat = async (userId: string, firstMessagePreview: string)
     };
 };
 
+// Récupération des chats de l'utilisateur
 export const getUserChats = async (): Promise<ChatSession[]> => {
     const { data, error } = await supabase
         .from('chats')
@@ -41,6 +44,7 @@ export const getUserChats = async (): Promise<ChatSession[]> => {
     }));
 };
 
+// Récupération des messages d'un chat
 export const getChatMessages = async (chatId: string): Promise<Message[]> => {
     const { data, error } = await supabase
         .from('messages')
@@ -62,6 +66,7 @@ export const getChatMessages = async (chatId: string): Promise<Message[]> => {
     }));
 };
 
+// Enregistrement d'un message
 export const saveMessage = async (chatId: string, message: Message) => {
     const { error } = await supabase
         .from('messages')

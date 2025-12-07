@@ -11,7 +11,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading }) => {
     const [text, setText] = useState('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Auto-resize textarea
+    // redimensionner automatiquement la zone de texte
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';

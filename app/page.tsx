@@ -19,7 +19,7 @@ const App = () => {
   const [user, setUser] = useState<any>(null);
   const scrollEndRef = useRef<HTMLDivElement>(null);
 
-  // Auth state
+  // état d'authentification (auth state)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const router = useRouter();
@@ -82,7 +82,7 @@ const App = () => {
     let chatId = currentSessionId;
 
     try {
-      // 1. If no current chat, create one
+      // 1. si il n'y a pas de chat actuel, créer un nouveau chat
       if (!chatId && user) {
         const newChat = await createNewChat(user.id, text);
         if (newChat) {
@@ -92,12 +92,12 @@ const App = () => {
         }
       }
 
-      // 2. Save user message if we have a chat ID
+      // 2. si il y a un ID de chat, enregistrer le message de l'utilisateur
       if (chatId) {
         await saveMessage(chatId, userMessage);
       }
 
-      // 3. Get AI Response
+      // 3. envoyer le message de l'utilisateur à l'API pour obtenir une réponse de l'IA
       const responseText = await fetch('/api/getMessage', {
         method: 'POST',
         headers: {
@@ -125,7 +125,7 @@ const App = () => {
 
       setMessages(prev => [...prev, aiMessage]);
 
-      // 4. Save AI message
+      // 4. si il y a un ID de chat, enregistrer le message de l'IA
       if (chatId) {
         await saveMessage(chatId, aiMessage);
       }
@@ -171,12 +171,12 @@ const App = () => {
   }
 
   if (!isAuthenticated) {
-    return null; // Will redirect
+    return null; // redirige vers la page de connexion
   }
 
   return (
     <div className="flex h-screen overflow-hidden bg-white">
-      {/* Sidebar Overlay for Mobile */}
+      {/* Overlay pour la sidebar sur mobile */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-gray-600/50 md:hidden transition-opacity"
@@ -193,9 +193,9 @@ const App = () => {
         currentSessionId={currentSessionId}
       />
 
-      {/* Main Content */}
+      {/* Contenu principal */}
       <main className="flex-1 flex flex-col h-full relative">
-        {/* Mobile Header */}
+        {/* En-tête mobile */}
         <header className="flex items-center justify-between p-4 md:hidden border-b border-orange-100 bg-white z-10 sticky top-0">
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -207,7 +207,7 @@ const App = () => {
           <div className="w-8" /> {/* Spacer for centering */}
         </header>
 
-        {/* Chat Area */}
+        {/* Zone de chat */}
         <div className="flex-1 overflow-y-auto scroll-smooth">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center p-8 text-center text-gray-800">
@@ -240,7 +240,7 @@ const App = () => {
           )}
         </div>
 
-        {/* Input Area (Sticky Bottom) */}
+        {/* Zone d'entrée (Sticky Bottom) */}
         <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white via-white to-transparent pt-10 pb-4">
           <ChatInput onSend={handleSend} isLoading={isLoading} />
         </div>

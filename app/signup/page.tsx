@@ -32,9 +32,9 @@ export default function SignupPage() {
             setError(error.message);
             setLoading(false);
         } else {
-            // For now, redirect to login or home. 
-            // Often requires email verification, but we'll send them to login with a message or just home if auto-confirm is on.
-            // Let's assume we can redirect to login to be safe.
+            // pour l'instant, rediriger vers la page de connexion ou la page d'accueil.
+            // souvent nécessite une vérification par e-mail, mais nous les enverrons à la page de connexion avec un message ou juste à la page d'accueil si la confirmation automatique est activée.
+            // supposons que nous puissions rediriger vers la page de connexion pour être sûr.
             router.push('/login');
         }
     };

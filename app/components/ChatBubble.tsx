@@ -24,7 +24,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
 
                 <div className="relative flex-1 overflow-hidden">
                     <div className="prose prose-orange max-w-none leading-7 text-[0.95rem] md:text-[1rem]">
-                        {/* Simple whitespace preservation for the text */}
+                        {/* préserver les espaces blancs pour le texte */}
                         <p className="whitespace-pre-wrap">{message.text}</p>
                     </div>
                 </div>

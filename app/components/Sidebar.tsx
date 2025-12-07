@@ -63,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onNewChat, sessions, o
                     Recent
                 </div>
 
-                {/* Mock history items */}
+                {/* histoire de chat */}
                 <div className="space-y-1">
                     {sessions.map((session) => (
                         <button
