@@ -62,7 +62,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading }) => {
             </div>
             <div className="text-center py-2">
                 <p className="text-xs text-gray-400">
-                    OrangeAI can make mistakes. Consider checking important information.
+                    OrangeAI v1.0.0 used gemini-2.5-flash and created by Ahmad Mirza
                 </p>
             </div>
         </div>
